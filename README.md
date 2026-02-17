@@ -10,6 +10,8 @@ Everything runs locally on your device.
 
 ---
 
+- [You can find the architacture file in here](ARCHITECTURE.md)
+
 ## 📱 Android Users
 
 An Android build is already included in this repository:
