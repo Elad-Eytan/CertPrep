@@ -1,47 +1,113 @@
-# CertPrep Mobile
+# CertPrep Pro
 
-An offline-first, mobile-optimized web application for practicing certification exams using JSON dumps.
+CertPrep Pro is an **offline-first, mobile-optimized certification practice application** built with **React + TypeScript + Vite**.
 
-## 1. Architecture Overview (Mobile-First)
+It allows you to practice multiple-choice certification exams by uploading JSON exam dumps — directly in your browser or via the provided Android APK.
 
-The application is designed as a **Single Page Application (SPA)** using **React** and **TypeScript**. It follows a strictly **client-side architecture** with no backend dependencies.
+No backend.
+No database.
+Everything runs locally on your device.
 
-*   **View Management**: A simple state-machine in `App.tsx` manages the core views (`HOME`, `QUIZ`, `SUMMARY`, `LEADERBOARD`). This avoids complex router setups and ensures seamless transitions within a "app-like" container.
-*   **Data Flow**:
-    *   **Input**: JSON files are parsed and normalized in `utils.ts` using the browser's `DOMParser` to strip HTML safely.
-    *   **State**: React's `useState` manages the active quiz session.
-    *   **Persistence**: `localStorage` is used via `services/storage.ts` to persist leaderboard data indefinitely on the device.
-*   **Styling**: **Tailwind CSS** is used for utility-first styling. The layout is constrained to a mobile viewport max-width on desktop to simulate a native app experience.
-*   **Performance**: The app loads everything into memory (feasible for text-based JSON dumps up to several MBs) for instant navigation and offline capability.
+---
 
-## 2. Parsing & Logic Details
+- [You can find the architacture file in here](ARCHITECTURE.md)
 
-The core logic resides in `utils.ts` and `types.ts`.
+## 📱 Android Users
 
-### Normalization Pipeline
-1.  **HTML Cleanup**: The `stripHtml` function uses the DOM API to decode entities and remove tags, ensuring clean text rendering while preserving line breaks.
-2.  **Option Parsing**: Options are normalized into `{ key, text }` objects. The parser looks for patterns like "A. Text" but includes fallbacks for malformed inputs.
-3.  **Type Detection**: The question type (`SINGLE` vs `MULTI`) is derived automatically from the length of the correct answer string (e.g., "A" vs "AB").
+An Android build is already included in this repository:
 
-### Quiz Logic
-*   **Strict Matching**: `isAnswerCorrect` enforces that the user must select *exactly* the correct set of options. No partial credit is given.
-*   **Explanation Priority**: The explanation text is dynamically built based on the hierarchy:
-    1.  Official Description
-    2.  Top 3 Community Comments (by vote count)
-    3.  Most Voted Answer Stats
+```
+CertPrep.apk
+```
 
-## 3. Edge Cases Handling
+You can:
 
-*   **Invalid JSON**: The file uploader validates structure (`Array.isArray`, missing fields) and provides user-friendly error messages.
-*   **HTML Entities**: Handled natively by `DOMParser`.
-*   **Reloads**: Because state is in memory, a page reload returns the user to the Home screen (safe default).
-*   **Empty History**: Leaderboard handles empty states gracefully.
-*   **Mobile Notches**: Sticky headers/footers account for safe-areas via CSS padding.
+1. Download the `CertPrep.apk` file directly from the repository
+2. Transfer it to your Android device
+3. Install it (you may need to allow installation from unknown sources)
 
-## 4. Run Instructions
+No build steps required.
 
-1.  Ensure you have a Node.js environment.
-2.  Place the provided files in a project folder.
-3.  Run `npm install react react-dom lucide-react recharts clsx tailwind-merge` (and dev deps: `typescript`, `vite` or `react-scripts`).
-4.  Start the dev server (e.g., `npm run dev`).
-5.  Upload a valid JSON file matching the specified schema.
+---
+
+## 🚀 Core Features
+
+| Feature                       | Description                                          |
+| ----------------------------- | ---------------------------------------------------- |
+| Offline-First                 | Runs fully client-side with no server required       |
+| JSON Upload                   | Drag & drop exam dump files                          |
+| Single / Multi-Select Support | Automatically detects `"A"` vs `"AC"` answers        |
+| Strict Validation             | Only exact correct combinations count                |
+| Explanation Engine            | Displays official description and parsed explanation |
+| Leaderboard                   | Stores results locally using browser `localStorage`  |
+| Mobile-Optimized UI           | Tailwind CSS mobile-first layout                     |
+| Android Support               | Prebuilt APK included in repo                        |
+
+---
+
+## 📁 JSON Format
+
+The application expects a JSON array of questions.
+
+Each question object must contain:
+
+| Field               | Required | Description                                       |
+| ------------------- | -------- | ------------------------------------------------- |
+| `body`              | ✅        | Question text                                     |
+| `options`           | ✅        | Array of `"A. ..."`, `"B. ..."` formatted options |
+| `answer`            | ✅        | Correct answer letters (`"A"` or `"AC"`)          |
+| `answerDescription` | Optional | Explanation shown after answering                 |
+
+---
+
+### Minimal Example
+
+```json
+[
+  {
+    "body": "What is the capital of France?",
+    "options": [
+      "A. London",
+      "B. Paris",
+      "C. Berlin",
+      "D. Madrid"
+    ],
+    "answer": "B",
+    "answerDescription": "Paris is the capital of France."
+  }
+]
+```
+
+---
+
+## 🧪 Sample Exam Included
+
+The repository includes:
+
+```
+amazon-aws-certified-cloud-practitioner-1590.json
+```
+
+Drag & drop this file into the app to start practicing immediately.
+
+---
+
+## 💻 Development
+
+For running the project locally on desktop:
+
+See:
+
+- [For Desktop development. Read the README_DESKTOP](WebApp/README_DESKTOP.md)
+
+
+---
+
+## 🏗 Tech Stack
+
+* React 18
+* TypeScript
+* Vite
+* Tailwind CSS
+* Lucide Icons
+* Recharts
